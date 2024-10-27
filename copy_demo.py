@@ -5,8 +5,25 @@ from dotenv import load_dotenv
 import json
 
 # setup
-load_dotenv()
-client = OpenAI(api_key="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")
+# Function to retrieve the OpenAI API key
+def get_openai_api_key():
+    try:
+        # Attempt to get the API key from Streamlit secrets
+        return st.secrets["OPENAI_API_KEY"]
+    except AttributeError:
+        # Fallback to environment variable if not running on Streamlit
+        return os.getenv("OPENAI_API_KEY")
+
+# Retrieve the API key
+OPENAI_API_KEY = get_openai_api_key()
+
+# Validate the API key
+if not OPENAI_API_KEY:
+    st.error("OpenAI API key is not set. Please configure it in the secrets.")
+    st.stop()
+
+# Initialize the OpenAI client
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 st.title("Regulated GPT tutor")
 
