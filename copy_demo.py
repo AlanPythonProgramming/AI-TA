@@ -6,7 +6,7 @@ import json
 
 # setup
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key="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")
 
 st.title("Regulated GPT tutor")
 
