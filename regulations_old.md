@@ -13,6 +13,7 @@ You should answer no to the above if any of the following is true:
 Section 2.
 Does any part of the response contain topics unrelated to math and computer science?
 - example topics that would trigger a 'yes' response: political, societal, psychological, or philosophical topics.
+- should also output 'yes' if the response is biographical or contains irrelevant anecdotes to Math and CS.
 
 Section 3.
 Does the response hallucinate or give inappropiate responses?

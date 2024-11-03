@@ -101,18 +101,18 @@ if 'tutor' not in st.session_state:
     st.session_state['tutor'] = tutor.id
     # st.success("Tutor assistant created.")
 
-    vector_store = client.beta.vector_stores.create(
-        name="regulations",
-        expires_after={
-            "anchor": "last_active_at",
-            "days": 1
-        }
-    )
-    file_paths = ["regulations_old.md"]
-    file_streams = [open(path, "rb") for path in file_paths]
-    file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
-        vector_store_id=vector_store.id, files=file_streams
-    )
+    # vector_store = client.beta.vector_stores.create(
+    #     name="regulations",
+    #     expires_after={
+    #         "anchor": "last_active_at",
+    #         "days": 1
+    #     }
+    # )
+    # file_paths = ["regulations_old.md"]
+    # file_streams = [open(path, "rb") for path in file_paths]
+    # file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
+    #     vector_store_id=vector_store.id, files=file_streams
+    # )
 
     supervisor = client.beta.assistants.create(
         name="4o-mini Supervisor",
