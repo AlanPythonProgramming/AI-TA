@@ -44,9 +44,10 @@ if "is_processing" not in st.session_state:
 
 example_prompts = [
     "Who are you?",
-    "Solve x^2-2*x+1==0",
+    "Can you explain what is a BFS algorithm?",
     "Can you write me a python algorithm to sort an array?",
-    "Meaning of life."
+    "Can you solve x^2-2*x+1==0?",
+    "What is the meaning of life?"
 ]
 
 # Display each prompt as a clickable button
@@ -68,7 +69,6 @@ else:
         st.session_state["is_processing"] = True
 
 col1, col2 = st.columns(2)
-
 
 # Function to append messages to a JSONL file
 def append_to_jsonl(file_path, messages):
@@ -243,14 +243,14 @@ with col2:
     #         st.markdown(message["content"])
 
 def render_aligned_messages(msg1, msg2):
-    max_height = max(len(msg1['content']), len(msg2['content']))
+    max_height = int(max(len(msg1['content']), len(msg2['content'])) / 1.1)
     
     with col1:
         with st.chat_message(msg1['role']):
-            st.markdown(f"<div style='min-height: {max_height}px'>{msg1['content']}</div>", unsafe_allow_html=True)
+            st.write(f"<div style='min-height: {max_height}px'>{msg1['content']}</div>", unsafe_allow_html=True)
     with col2:
         with st.chat_message(msg2['role']):
-            st.markdown(f"<div style='min-height: {max_height}px'>{msg2['content']}</div>", unsafe_allow_html=True)
+            st.write(f"<div style='min-height: {max_height}px'>{msg2['content']}</div>", unsafe_allow_html=True)
 
 for msg1, msg2 in zip(st.session_state['tutor_messages'], st.session_state['normal_tutor_messages']):
     render_aligned_messages(msg1, msg2)
