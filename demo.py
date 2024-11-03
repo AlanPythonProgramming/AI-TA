@@ -231,13 +231,26 @@ if st.session_state['prompt_to_process']:
 # Column 1: Regulated GPT tutor
 with col1:
     st.subheader("Regulated GPT Tutor")
-    for message in st.session_state['tutor_messages']:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    # for message in st.session_state['tutor_messages']:
+    #     with st.chat_message(message["role"]):
+    #         st.markdown(message["content"])
 
 # Column 2: Normal GPT tutor
 with col2:
     st.subheader("Normal GPT Tutor")
-    for message in st.session_state['normal_tutor_messages']:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    # for message in st.session_state['normal_tutor_messages']:
+    #     with st.chat_message(message["role"]):
+    #         st.markdown(message["content"])
+
+def render_aligned_messages(msg1, msg2):
+    max_height = max(len(msg1['content']), len(msg2['content']))
+    
+    with col1:
+        with st.chat_message(msg1['role']):
+            st.markdown(f"<div style='min-height: {max_height}px'>{msg1['content']}</div>", unsafe_allow_html=True)
+    with col2:
+        with st.chat_message(msg2['role']):
+            st.markdown(f"<div style='min-height: {max_height}px'>{msg2['content']}</div>", unsafe_allow_html=True)
+
+for msg1, msg2 in zip(st.session_state['tutor_messages'], st.session_state['normal_tutor_messages']):
+    render_aligned_messages(msg1, msg2)
