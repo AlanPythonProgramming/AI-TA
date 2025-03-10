@@ -9,7 +9,7 @@ services:
     environment:
       - MONGO_URI=${MONGO_URI}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      # etc...
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
     volumes:
       - .:/app  # optional, if you want local dev changes to be reflected
     depends_on:
