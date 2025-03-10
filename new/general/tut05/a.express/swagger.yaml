@@ -1,0 +1,296 @@
+openapi: 3.0.3
+info:
+  title: Tut05 People API
+  description: |
+    API written for tut05 a.express exercise.
+
+    This is only for your convenience. For any mistakes or inconsistency with the specification (README.md), please report to us on the course forum :).
+
+    Please examine the 'example' return values carefully - for example, the GET person/:personid route requires your object to be wrapped in a 'person' key.
+
+    Also, feel free to ignore the names of some of the schemas at the bottom of this file - this is only a label. To find out what each route takes in as input and returns, you instead should look at the "Example Value" within each route.
+  version: 1.0.0
+
+servers:
+  - url: http://127.0.0.1:{PORT}
+    variables:
+      PORT:
+        type: integer
+        default: 49152
+  - url: https://comp1531namesages.alwaysdata.net
+
+tags:
+  - name: People
+    description: Creating or listing people in the data
+  - name: Person
+    description: Interacting with a person's details
+  - name: Other
+    description: Routes that don't fit in any of the categories above
+
+paths:
+  /clear:
+    delete:
+      tags:
+        - Other
+      summary: Clears the data store
+      description: Clears all people in the data store :( - they will be missed.
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+
+  /people/add:
+    post:
+      tags:
+        - People
+      summary: Adds a new person
+      description: Welcome to the family! This person will now forever (not forever) be in the list of people!
+      requestBody:
+        $ref: '#/components/requestBodies/PeopleAddBody'
+      responses:
+        '200':
+          description: A personId corresponding to the person is returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  personId:
+                    $ref: '#/components/schemas/PersonId'
+        '400':
+          description: |
+            If any of the following is true:
+              - the given name is an empty string, ""
+              - the given age is not strictly positive
+              - the given name already exists in the data store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /people/list:
+    get:
+      tags:
+        - People
+      summary: Lists all people
+      description: This is how we can find everyone in the family :P
+      parameters:
+        - name: minAge
+          required: true
+          in: query
+          schema:
+            $ref: '#/components/schemas/MinAge'
+      responses:
+        '200':
+          description: List of people returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  people:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Person'
+        '400':
+          description: |
+            If any of the following is true:
+              - minAge is strictly negative
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /people/stats:
+    get:
+      tags:
+        - People
+      summary: Lists stats
+      description: Stats involving age for everyone who were added!
+      responses:
+        '200':
+          description: Stats returned!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stats:
+                    $ref: '#/components/schemas/Stats'
+        '400':
+          description: |
+            If any of the following is true:
+              - There are no entries in the data store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /person/{personid}:
+    get:
+      tags:
+        - Person
+      summary: View details about a single person
+      description: This is how you stalk people hehehe - except GET requests will be logged :'( - tis no gud.
+      parameters:
+        - $ref: '#/components/parameters/PersonId'
+      responses:
+        '200':
+          description: Person details returned :3
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  person:
+                    $ref: '#/components/schemas/Person'
+        '400':
+          description: |
+            If any of the following is true:
+              - personid does not refer to an existing person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+    put:
+      tags:
+        - Person
+      summary: Update person details
+      description: Change your name, change your age - stay on the run!
+      parameters:
+        - $ref: '#/components/parameters/PersonId'
+      requestBody:
+        $ref: '#/components/requestBodies/PeopleAddBody'
+      responses:
+        '200':
+          description: Empty object returned upon success
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '400':
+          description: |
+            If any of the following is true:
+              - personid does not refer to an existing person
+              - the given name is an empty string, ""
+              - the given age is not strictly positive
+              - the given name already exists in the data store (no error if updating name to the same thing!)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+    delete:
+      tags:
+        - Person
+      summary: Delete a person
+      description: The world is too cruel, but what can we do. RIP you shall be missed.
+      parameters:
+        - $ref: '#/components/parameters/PersonId'
+      responses:
+        '200':
+          description: Empty object returned upon success
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '400':
+          description: |
+            If any of the following is true:
+              - personid does not refer to an existing person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+components:
+  schemas:
+    Error:
+      type: string
+      example: Replace this with a relevant error message!
+      description: A specific error message of your choice!
+
+    ErrorObject:
+      type: object
+      description: Object containing error key
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+    Name:
+      type: string
+      description: Name of the person
+      example: Tammy McTamtam
+
+    Age:
+      type: number
+      description: Age of ultron (or anyone, really)
+      example: 22
+
+    PersonInputData:
+      type: object
+      description: Data that the user would input to create or edit a person
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        age:
+          $ref: '#/components/schemas/Age'
+
+    PersonId:
+      type: number
+      description:  A unique, immutable and non-reusable id that corresponds to exactly one person
+      example: 1531
+
+    MinAge:
+      type: number
+      description:  The lowest age value
+      example: 1
+
+    MaxAge:
+      type: number
+      description:  The highest age value
+      example: 122
+
+    AverageAge:
+      type: number
+      description:  Average age of everyone!
+      example: 38.2
+
+    Person:
+      allOf:
+        - type: object
+          properties:
+            personId:
+              $ref: '#/components/schemas/PersonId'
+        - $ref: '#/components/schemas/PersonInputData'
+
+    Stats:
+      type: object
+      properties:
+        minAge:
+          $ref: '#/components/schemas/MinAge'
+        maxAge:
+          $ref: '#/components/schemas/MaxAge'
+        averageAge:
+          $ref: '#/components/schemas/AverageAge'
+
+    EmptyObject:
+      type: object
+      description: lol why even bother reading this!
+
+
+  parameters:
+    PersonId:
+      in: path
+      name: personid
+      required: true
+      schema:
+        $ref: '#/components/schemas/PersonId'
+
+  requestBodies:
+    PeopleAddBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PersonInputData'
+
+  responses:
+    EmptyObjectResponse:
+      description: Returns an empty object upon success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmptyObject'
