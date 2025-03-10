@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  # Your Python/Streamlit service
+  tutor-app:
+    build: .
+    container_name: tutor_app
+    ports:
+      - "8501:8501"   # expose streamlit externally
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # etc...
+    volumes:
+      - .:/app  # optional, if you want local dev changes to be reflected
+    depends_on:
+      - elasticsearch
+      # If you spin up a separate container for Chroma:
+      - chromadb
+
+  # Elasticsearch container
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.2
+    container_name: es_container
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      # You can also set memory limits, etc.
+    ports:
+      - "9200:9200"
+
+  # Optionally, a Chroma DB container
+  chromadb:
+    image: chromadb/chroma:0.3.23
+    container_name: chroma_container
+    volumes:
+      - ./chroma_data:/data  # persist local data on your host
+    ports:
+      - "8000:8000"
+
