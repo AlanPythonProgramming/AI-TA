@@ -1,0 +1,9 @@
+openai
+elasticsearch
+elasticsearch[helpers]
+chromadb
+voyageai
+python-dotenv
+streamlit
+pymongo
+opik
