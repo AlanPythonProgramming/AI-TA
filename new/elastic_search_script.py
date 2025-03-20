@@ -11,6 +11,8 @@ import json
 load_dotenv()
 vo = voyageai.Client(api_key=os.getenv("VOYAGE_API_KEY"))
 
+ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
@@ -51,7 +53,7 @@ docs = read_json("recorded_chunks.json")
 
 class ElasticsearchBM25:
     def __init__(self, create_index, index_name: str = "contextual_bm25_index"):
-        self.es_client = Elasticsearch("http://localhost:9200")
+        self.es_client = Elasticsearch(ELASTICSEARCH_URL)
         self.index_name = index_name
         if create_index:
             self.create_index()
