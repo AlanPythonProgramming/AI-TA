@@ -14,7 +14,7 @@ from datetime import datetime
 load_dotenv()
 vo = voyageai.Client(api_key=os.getenv("VOYAGE_API_KEY"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI"))
+mongo_client = pymongo.MongoClient("mongodb://mongo:27017/") #pymongo.MongoClient(os.getenv("MONGO_URI"))
 mongo_db = mongo_client['comp1531_testing']
 collection_logs = mongo_db['chat_logs']
 
@@ -22,8 +22,8 @@ def read_json(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def initialize_chromadb(path):
-    return chromadb.PersistentClient(path=path, settings=Settings())
+def initialize_chromadb():
+    return chromadb.PersistentClient(path="/comp1531", settings=Settings())
 
 def get_embedding(text, input_type="document"):
     result = vo.embed([text], model="voyage-3", input_type=input_type)
@@ -55,7 +55,7 @@ def chat_ui(messages):
 
 class ElasticsearchBM25:
     def __init__(self, create_index, index_name: str = "contextual_bm25_index"):
-        self.es_client = Elasticsearch("http://localhost:9200")
+        self.es_client = Elasticsearch("http://elasticsearch:9200")
         self.index_name = index_name
         if create_index:
             self.create_index()
@@ -252,7 +252,7 @@ def create_chunk_data_map():
 def run_rag_pipeline(question):
     
     retrieved_results = rag_fusion_search(question, 25, collection, es, data_map)
-    retrieved_context = [f"Summary: {res['summary']}\n\nContent:\n{res["content"]}"for res in retrieved_results]
+    retrieved_context = [f"Summary: {res['summary']}\n\nContent:\n{res['content']}"for res in retrieved_results]
     retrieved_context = rerank(question, retrieved_context)
     # messages = [
     #     {
@@ -294,7 +294,7 @@ Otherwise, you should determine whether the query is related to software enginee
 """
 
 # Initialize the vector store and collection
-db = initialize_chromadb("comp1531")
+db = initialize_chromadb()
 collection = db.get_collection(name="fixed_length_assessment_chunks")
 docs = read_json("complete_assessment_chunks.json")
 es = create_elasticsearch_bm25_index(docs)
