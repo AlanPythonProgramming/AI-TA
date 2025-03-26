@@ -14,7 +14,7 @@ from datetime import datetime
 load_dotenv()
 vo = voyageai.Client(api_key=os.getenv("VOYAGE_API_KEY"))
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-mongo_client = pymongo.MongoClient("mongodb://mongo:27017/") #pymongo.MongoClient(os.getenv("MONGO_URI"))
+mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://mongo:27017/"))
 mongo_db = mongo_client['comp1531_testing']
 collection_logs = mongo_db['chat_logs']
 
